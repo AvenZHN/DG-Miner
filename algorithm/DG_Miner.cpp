@@ -728,7 +728,7 @@ int main(int argc, const char *argv[])
 		cout<<endl;
 	}
 
-    cout << "simple patts:" << endl;
+    cout << "concise patts:" << endl;
     for(int j = 0; j<simplepatt.size();j++)
     {
         for (auto ff: simplepatt[j])
@@ -755,9 +755,16 @@ int main(int argc, const char *argv[])
         cout << endl;
     }
     cout << "-------------------- top pc region -----------------------------" << endl;
+    int max_global_range_pc = global_range_pc[0];
+    for (int ii = 0; ii < DELTA; ii++){
+        if (global_range_pc[ii]>max_global_range_pc) {
+		max_global_range_pc = global_range_pc[ii];
+	}
+    }
     for (int ii = 0; ii < DELTA; ii++)
     {
-        if (global_range_pc[ii]>DELTA*(maxlen-minlen)) {
+        //if (global_range_pc[ii]>DELTA*(maxlen-minlen)) {
+        if (global_range_pc[ii]>max_global_range_pc*0.5) {
             cout << ii << ":" << global_range_pc[ii] << endl;
             for (int fi = 0; fi < global_range_pc_patt[ii].size(); fi++) {
             //for (int fi = 0; fi < frenum; fi++) {
