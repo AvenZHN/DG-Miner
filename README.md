@@ -3,7 +3,7 @@ DG-Miner is a high average utility pattern miner for critical path analysis of p
   
 ## How to run:  
 (1) Run DG-Miner using test trace:    
-cd algorithm
+cd algorithm  
 make    
 make test    
 (2) Run DG-Miner using spec cpu2006 trace:    
