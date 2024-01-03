@@ -45,21 +45,21 @@ To run DG-Miner using a spec cpu2006/2017 trace, use the following command forma
 
 ```bash
 cd algorithm
-./DG\_Miner simpoint\_weights critical\_paths pc\_mem\_trace output\_file minlen maxlen topk
+./DG_Miner simpoint_weights critical_paths pc_mem_trace output_file minlen maxlen topk
 ```
 
 For example, to run DG-Miner on the 456.hmmer trace from spec cpu2006:
 
 ```bash
 cd algorithm
-./DG\_Miner ../database/test/test.simpoint\_weight ../database/spec2006\_archexp/critical\_path/456.hmmer\_0/ ../database/spec2006\_archexp/pc\_mem\_trace/trace\_1M-456.hmmer\_0\_simpoint\_instruction\_flow spec2006-456.hmmer\_0.txt 2 10 0.2
+./DG_Miner ../database/test/test.simpoint_weight ../database/spec2006_archexp/critical_path/456.hmmer_0/ ../database/spec2006_archexp/pc_mem_trace/trace_1M-456.hmmer_0_simpoint_instruction_flow spec2006-456.hmmer_0.txt 2 10 0.2
 ```
 
 ## stat utility number of database
 
 ```bash
 cd algorithm
-g++ -std=c++17 stat\_utility.cpp -lstdc++fs -o stat\_utility
-./stat\_utility ../database/spec2006\_archexp/critical\_path/ ../database/spec2017\_archexp/critical\_path/
+g++ -std=c++17 stat_utility.cpp -lstdc++fs -o stat_utility
+./stat_utility ../database/spec2006_archexp/critical_path/ ../database/spec2017_archexp/critical_path/
 ```
 
