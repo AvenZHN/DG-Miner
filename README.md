@@ -38,7 +38,7 @@ cd algorithm
 make test
 ```
 
-Print out format:
+The print out information format is as follows:
 ```code
 ++++++++++++++++++++++++++++++++++++++++
 trace:"<critical path trace file>"
@@ -49,7 +49,7 @@ minpecusup:<minimum peculiar utility threshold>
 [n]<candidate from frequent patterns>:<support>:<average utility>:<peculiarity>|<region0>:<occurrence>,...
 [c]<candidate from high upper bound patterns>:<support>:<average utility>:<peculiarity>
 ================== result =====================
-[n]<requent pattern>
+[n]<frequent pattern>
 
 concise patts:
 <concise pattern>
@@ -86,10 +86,6 @@ For example, to run DG-Miner on the 456.hmmer trace from spec cpu2006:
 ```bash
 cd algorithm
 ./DG_Miner_prt ../database/test/test.simpoint_weight ../database/spec2006_archexp/critical_path/456.hmmer_0/ ../database/spec2006_archexp/pc_mem_trace/trace_1M-456.hmmer_0_simpoint_instruction_flow spec2006-456.hmmer_0.txt 2 10 0.2 | tee spec2006-456.hmmer_0.log
-```
-
-The print out information format is as follows:
-```code
 ```
 
 ## Statistical analysis
