@@ -1,3 +1,58 @@
+/**************************************************************************
+ * Overview:
+ * ------------------------------------------------------------------------
+ * The stat_utility.cpp program analyzes trace files to extract information 
+ * about the distribution of weights or utility numbers within the traces. 
+ * It recursively processes all files in the specified directories, counting 
+ * occurrences of different weights and calculating their percentages in the 
+ * total count. It then outputs the unique weights, their frequencies, and 
+ * their percentages in the overall dataset.
+ * ========================================================================
+ * Functionality:
+ * ------------------------------------------------------------------------
+ * 1. Input Processing:
+ * The program reads and processes trace files provided in a specified directory.
+ * Each line in the trace files contains information about an instruction, 
+ * including its number, vertex type, weight, and stall event type.
+ * 2. Weight Distribution Analysis:
+ * The program collects statistics on the distribution of weights (utility 
+ * numbers) found in the trace files.
+ * It maintains a count of occurrences for each unique weight using a map 
+ * (`utility_number`).
+ * 3. Output:
+ * After processing all trace files, the program outputs the unique weights, 
+ * their frequencies, and their percentages in the overall dataset.
+ * The output includes both the raw count and the percentage of each weight 
+ * relative to the total number of occurrences.
+ * 4. Usage:
+ * The program expects two command-line arguments, representing the paths 
+ * to the directories containing the trace files.
+ * It recursively processes all files in each directory, extracting and 
+ * analyzing weight information.
+ * Example Usage:
+ * ./stat_utility /path/to/trace_directory1 /path/to/trace_directory2
+ * The trace_directory1 usually is the spec2006, and the trace_directory2
+ * is the spec2017.
+ * =======================================================================
+ * Output:
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * trace:/path/to/trace_directory1/trace_file1.txt
+ * trace:/path/to/trace_directory1/trace_file2.txt
+ * ...
+ * trace:/path/to/trace_directory2/trace_file1.txt
+ * trace:/path/to/trace_directory2/trace_file2.txt
+ * ...
+ * Unique Weights: 1, 2, 3, ...
+ * Frequencies: 10, 25, 15, ...
+ * Percentages: "1 (20.00%)", "2 (50.00%)", "3 (30.00%)", ...
+ * =======================================================================
+ * Conclusion:
+ * This program aids in understanding the distribution of weights within 
+ * the trace files, providing insights into the prevalence of different 
+ * instruction types or events based on their assigned weights.
+ */
+
+
 #include <vector>
 #include <string>
 #include <iostream>
