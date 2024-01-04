@@ -1,11 +1,11 @@
 # Target: all
 # Build multiple versions of the program with different compilation flags
 all:
-	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -DPRINT -o DG_Miner_prt
 	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -o DG_Miner
+	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -DPRINT -o DG_Miner_prt
 	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -DMAXBOUND -o DG_Miner_maxbound
 	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -DNOCPJM -o DG_Miner_no_cpjm
-	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -DPECU -DPRINT -o DG_Miner_pecu
+	g++ -std=c++17 DG_Miner.cpp -lstdc++fs -DPECU -o DG_Miner_pecu
 	g++ sort_event.cpp -o sort_event
 
 # Target: test
