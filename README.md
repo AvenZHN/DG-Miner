@@ -24,9 +24,13 @@ make
 ```
 
 DG\_Miner: the mining frequent pattern program with concise pattern judgment mechanism, upper bound is adjustable, parameter setting for general analysis.
+
 DG\_Miner\_prt: compile with -DPRINT, DG\_Miner + program analysis + dumpout pattern trace file.
+
 DG\_Miner\_maxbound: compile with -DMAXBOUND, DG\_Miner but maximum utility as upper bound.
+
 DG\_Miner\_no\_cpjm: compile with -DNOCPJM, DG\_Miner without concise pattern judgment mechanism.
+
 DG\_Miner\_pecu: compile with -DPECU and -DPRINT, DG\_Miner but parameter setting for peculiarity analysis.
 
 ## Running Tests
