@@ -9,6 +9,7 @@ DG-Miner is a high average utility pattern miner designed for critical path anal
 - [Building](#building)
 - [Running Tests](#running-tests)
 - [Usage](#usage)
+- [Statistical analysis](#statistical-analysis)
 
 ## Introduction
 
