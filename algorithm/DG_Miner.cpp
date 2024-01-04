@@ -19,7 +19,7 @@ using namespace std;
 
 #define DELTA_DEF 10000
 
-//////////////////////////
+// Structure to store information related to each sequence database
 struct seqdb                 
 {
     int id;                         // Sequence ID
@@ -32,7 +32,6 @@ struct seqdb
 }; 
 
 vector<seqdb> sDB;                 // Sequence database
-///////////////////////////
 
 // Calipers Model
 class CalipersModel {
@@ -136,11 +135,10 @@ public:
 };
 
 /////////////////////////
-
 vector<vector<int>> *freArr;       // Pointer to store frequent patterns
 vector<vector<int>> *canArr;       // Pointer to store candidate patterns
 vector<vector<int>> candidate;     // Vector to store candidate patterns
-vector<vector<int>> simplepatt;    // Vector to store simple patterns
+vector<vector<int>> concisepatt;    // Vector to store concise patterns
 
 unsigned int minpc, maxpc, deltapc;   // Variables to store minimum, maximum, and delta values for program counters
 
@@ -258,12 +256,12 @@ multimap<int, int> invert(map<int, int> & mymap) {
 
 // Function to generate parameters for mining based on candidate patterns and utility distribution
 // Input: 
-//   - double & minsup: Minimum support threshold to be determined
+//   - double & minpau: Minimum support threshold to be determined
 //   - double & minu: Minimum utility threshold to be determined
-//   - double & bound: Upper bound for utility to be determined
+//   - double & upbound: Upper upbound for utility to be determined
 //   - int & minpecusup: Minimum utility for performance exception to be determined
-//   - double topk: Top-k percentage for determining minsup
-void gen_param(double & minsup, double & minu, double & bound, int & minpecusup, double topk) {
+//   - double topk: Top-k percentage for determining minpau
+void gen_param(double & minpau, double & minu, double & upbound, int & minpecusup, double topk) {
     int candnum = candidate.size();  // Number of candidate patterns
     map<int, int> udist = {};  // Utility distribution map
     vector<int> cand_pau;  // Vector to store pattern utility sums
@@ -303,20 +301,20 @@ void gen_param(double & minsup, double & minu, double & bound, int & minpecusup,
     // Sort the cand_pau vector in descending order
     sort(cand_pau.begin(), cand_pau.end(), greater<int>());
 
-    // Determine minsup based on top-k percentage
-    minsup = cand_pau[int(cand_pau.size() * topk)];
-    cout << "minsup:" << minsup << endl;
+    // Determine minpau based on top-k percentage
+    minpau = cand_pau[int(cand_pau.size() * topk)];
+    cout << "minpau:" << minpau << endl;
 
     int sum_sup = 0;
 
-    // Determine bound and minpecusup based on utility distribution
+    // Determine upbound and minpecusup based on utility distribution
     for (auto ui = udist.begin(); ui != udist.end(); ui++) {
         sum_sup += ui->second;
 
         // Check if the cumulative support reaches a threshold
         if (ui->first == 0) continue;
         if (sum_sup * 1.0 / total_sup > 0.99) {
-            bound = ui->first;  // Set bound to the current utility value
+            upbound = ui->first;  // Set upbound to the current utility value
             minpecusup = (++ui)->first;  // Set minpecusup to the next utility value
             break;
         }
@@ -330,10 +328,10 @@ void gen_param(double & minsup, double & minu, double & bound, int & minpecusup,
     cout << "minu:" << minu << endl;
 
 #ifdef MAXBOUND
-    // Set bound to the maximum utility value in the utility distribution
-    bound = udist.rbegin()->first;
+    // Set upbound to the maximum utility value in the utility distribution
+    upbound = udist.rbegin()->first;
 #endif
-    cout << "bound:" << bound << endl;
+    cout << "upbound:" << upbound << endl;
 
     cout << "minpecusup:" << minpecusup << endl;
 }
@@ -558,13 +556,13 @@ bool gen_shortpatt(int level) {
 
         bool had = false;
 
-        // Iterate through existing simple patterns
-        for (auto sph : simplepatt) {
-            // Check if the size of the existing simple pattern matches the generated short pattern
+        // Iterate through existing concise patterns
+        for (auto sph : concisepatt) {
+            // Check if the size of the existing concise pattern matches the generated short pattern
             if (sph.size() == short_patt.size()) {
                 bool found = true;
 
-                // Compare each element of the existing simple pattern with the generated short pattern
+                // Compare each element of the existing concise pattern with the generated short pattern
                 for (int si = 0; si < sph.size(); si++) {
                     if (sph[si] != short_patt[si]) {
                         found = false;
@@ -580,10 +578,10 @@ bool gen_shortpatt(int level) {
             }
         }
 
-        // If the generated short pattern is not found in existing patterns, add it to simplepatt
+        // If the generated short pattern is not found in existing patterns, add it to concisepatt
         if (!had) {
             gennew = true;
-            simplepatt.push_back(short_patt);
+            concisepatt.push_back(short_patt);
         }
     }
 
@@ -605,88 +603,6 @@ void print_patts(vector<vector<int>> patts) {
     }
     cout << endl;  // Move to the next line after printing all patterns
 }
-
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <cmath>
-#include <cassert>
-#include <filesystem>
-#include <ctime>
-#include <map>
-#include <algorithm>
-#include <unistd.h>
-#include <sys/time.h>
-
-using namespace std;
-
-// Function to split a string into a vector of substrings based on a delimiter
-vector<string> split(const string &s, char delim) {
-    vector<string> result;
-    stringstream ss(s);
-    string item;
-
-    while (getline(ss, item, delim)) {
-        result.push_back(item);
-    }
-
-    return result;
-}
-
-// Structure to store information related to each sequence database
-struct seqdb {
-    int id;
-    vector<int> instrNum;
-    vector<int> vertexType;
-    vector<int> weight;
-    vector<int> event;
-    vector<int> pc;
-    double simpoint_weight;
-};
-
-// Function to read a file containing simpoint weights and populate the seqdb structure
-void read_simpoint_weight_file(const char *namefile);
-
-// Function to read a file containing trace information and populate the seqdb structure
-void read_file(const filesystem::path namepath);
-
-// Function to read a file containing PC and memory trace information and populate pc_code
-void read_pc_mem_trace(const char *namefile);
-
-// Function to convert a map<key, value> to a multimap<value, key>
-multimap<int, int> invert(map<int, int> &mymap);
-
-// Function to generate candidate patterns for a given level
-void gen_candidate(int level);
-
-// Function to compare two vectors of integers up to a specified length
-int compare(vector<int> a, vector<int> b, int len);
-
-// Function to perform binary search on the candidate array
-int binary_search(int level, vector<int> cand, int low, int high);
-
-// Function to generate candidate patterns for a given level based on frequent patterns of the previous level
-void gen_candidate(int level);
-
-// Function to compare two vectors of integers up to a specified length
-int compare(vector<int> a, vector<int> b, int len);
-
-// Function to perform binary search on the candidate array
-int binary_search(int level, vector<int> cand, int low, int high);
-
-// Function to generate frequent patterns by eliminating redundant elements
-bool gen_shortpatt(int level);
-
-// Function to print patterns contained in a vector of vectors of integers
-void print_patts(vector<vector<int>> patts);
-
-// Function to get the current system time in milliseconds
-unsigned long GetTickCount();
-
-// Function to calculate various parameters needed for the algorithm
-void gen_param(double &minsup, double &minu, double &bound, int &minpecusup, double topk);
 
 int main(int argc, const char *argv[]) {
     assert(argc >= 8);
@@ -716,21 +632,19 @@ int main(int argc, const char *argv[]) {
     double topk = atof(argv[7]);
 
     // Other parameters
-    double minsup = 0;
+    double minpau = 0;
     double minu = 0;
-    double bound = 0;
+    double upbound = 0;
     int minpecusup = 0;  // Minimum peculiarity value support
 
     if (argc > 8) {
-        minsup = atof(argv[8]);
+        minpau = atof(argv[8]);
         minu = atof(argv[9]);
-        bound = atof(argv[10]);
+        upbound = atof(argv[10]);
         minpecusup = atoi(argv[11]);  // Minimum peculiarity value support
     }
 
     int frenum = 0;  // Number of frequent patterns
-    vector<vector<int>> *freArr;
-    vector<vector<int>> *canArr;
     vector<double> *freArrHUP;
     vector<int> *freArrSUP;
     vector<double> *freArrPecu;
@@ -763,7 +677,7 @@ int main(int argc, const char *argv[]) {
 
     candidate = model.edges;
 
-    gen_param(minsup, minu, bound, minpecusup, topk);
+    gen_param(minpau, minu, upbound, minpecusup, topk);
     DWORD begintime = GetTickCount();
 
     while (candidate.size() != 0) {
@@ -789,93 +703,104 @@ int main(int argc, const char *argv[]) {
 
             for (int t = 0; t < numbS; t++) {
                 if (sDB[t].vertexType.size() > 0) {
-                    int sups = 0; // seq sup
-
+                    int sups = 0; // Sequence Support
+            
+                    // Iterate through the vertices in the sequence database
                     for (int si = 0; si <= sDB[t].vertexType.size() - ptn_len; si++) {
+                        // Check if the first vertex type matches the first element of the pattern
                         if (sDB[t].vertexType[si] == p[0]) {
                             bool success = true;
-
+            
+                            // Check if the subsequent vertices match the pattern
                             for (int pi = 1; pi < ptn_len; pi++) {
                                 if (sDB[t].vertexType[si + pi] != p[pi]) {
                                     success = false;
                                     break;
                                 }
-
+            
 #ifdef ARCHEXP
-                                // ArchExplorer use Virtual (event 16) to connect DEG,
+                                // ArchExplorer uses Virtual (event 16) to connect DEG,
                                 // but Virtual has no use in performance.
-                                // So get rid of it in frequent patterns.
+                                // Exclude it in frequent patterns.
                                 if (sDB[t].event[si + pi] == 16) {
                                     success = false;
                                     break;
                                 }
 #endif
                             }
-
+            
                             if (success) {
 #ifdef PRINT
                                 occurence[t].push_back(si);
 #endif
                                 sup++;
                                 int pu = 0;
-
+            
+                                // Calculate pattern utility
                                 for (int wi = 1; wi < ptn_len; wi++) {
                                     int itemWeight = sDB[t].weight[si + wi];
                                     pu += itemWeight;
-
+            
 #ifdef PRINT
+                                    // Increment peculiarity count for items with weight greater than or equal to minpecusup
                                     if (itemWeight >= minpecusup) {
                                         pecu++;
                                     }
 #endif
                                 }
-
+            
+                                // Check if pattern utility meets the minimum utility criteria
                                 if (pu >= minu * (ptn_len - 1)) {
                                     sups += pu;
-
+            
 #ifdef PRINT
-                                    int startpc = sDB[t].pc[si]; // Start pc
+                                    // Update local and global pc range counts
+                                    int startpc = sDB[t].pc[si];
                                     int pos = (startpc - minpc) / deltapc;
-
+            
                                     if (pos >= DELTA)
                                         pos = DELTA - 1;
-
+            
                                     local_range_pc[pos]++;
                                     global_range_pc[pos]++;
                                     allpos.push_back(pos);
-
-                                    // Dump out trace
+            
+                                    // Output trace information
                                     for (auto pi : p) {
-                                        os << pi;
+                                        os << hex << pi << dec;
                                     }
-
+            
                                     os << ' ';
-
-                                    // The event type store in the end point instruction, so start at si+1
+            
+                                    // Output event types in the sequence
                                     for (int ei = si + 1; ei < si + ptn_len; ei++) {
                                         os << model.events[sDB[t].event[ei]];
-
+            
                                         if (ei < si + ptn_len - 1)
                                             os << "-";
                                     }
-
+            
                                     os << ' ' << dec << si << ' ' << hex << "0x" << startpc << ' ' << dec << pu << endl;
-
+            
+                                    // Output pc information for each vertex in the pattern
                                     for (int pcci = 0; pcci < ptn_len; pcci++) {
                                         int patt_pc = sDB[t].pc[si + pcci];
                                         os << "*\t" << hex << "0x" << patt_pc << ":" << pc_code[patt_pc] << endl;
                                     }
 #endif
-
+            
+                                    // Move the iterator to the last vertex of the matched pattern
                                     si += ptn_len - 1 - 1; // -1 for si++
                                 }
                             }
                         }
                     }
-
+            
+                    // Update the total support considering simpoint weight
                     supd += sups * sDB[t].simpoint_weight;
                 }
             }
+
 
             double hup = supd / (ptn_len - 1);
 
@@ -891,7 +816,7 @@ int main(int argc, const char *argv[]) {
                 avgpecu = (double)pecu / (double)occnum;
 #endif
 
-            if (hup >= double(minsup)) {
+            if (hup >= double(minpau)) {
                 freArr[f_level].push_back(p);
                 canArr[f_level].push_back(p);
 
@@ -917,7 +842,7 @@ int main(int argc, const char *argv[]) {
                     // Print result of frequent candidate
                     cout << "[" << frenum << "]";
                     for (auto pi : p) {
-                        cout << pi;
+                        cout << hex << pi << dec;
                     }
 
                     cout << ":" << occnum << ":" << hup << ":" << avgpecu << "|";
@@ -932,14 +857,14 @@ int main(int argc, const char *argv[]) {
                     frenum++;
                 }
             } else {
-                if (sup * bound >= double(minsup)) {
+                if (sup * upbound >= double(minpau)) {
                     canArr[f_level].push_back(p);
 
 #ifdef PRINT
                     cout << "[c]";
 
                     for (auto pi : p) {
-                        cout << pi;
+                        cout << hex << pi << dec;
                     }
 
                     cout << ":" << sup << ":" << hup << ":" << avgpecu << endl;
@@ -951,7 +876,7 @@ int main(int argc, const char *argv[]) {
         f_level++;
 
 #ifndef NOCPJM
-        if (not gen_shortpatt(f_level - 1))
+        if (!gen_shortpatt(f_level - 1))
             break;
 #endif
 
@@ -1028,8 +953,8 @@ int main(int argc, const char *argv[]) {
 
     // Print concise patterns
     cout << "concise patts:" << endl;
-    for (int j = 0; j < simplepatt.size(); j++) {
-        for (auto ff : simplepatt[j]) {
+    for (int j = 0; j < concisepatt.size(); j++) {
+        for (auto ff : concisepatt[j]) {
             cout << ff;
         }
         cout << "  ";
@@ -1083,12 +1008,12 @@ int main(int argc, const char *argv[]) {
     cout << endl << "----------------------------------------------------------------" << endl;
 
     // Print parameters and statistics
-    cout << "minsup=" << minsup << " minpecusup=" << minpecusup << " minlen=" << minlen << " maxlen=" << maxlen << endl;
-    cout << "minu=" << minu << " bound=" << bound << endl;
+    cout << "minpau=" << minpau << " minpecusup=" << minpecusup << " minlen=" << minlen << " maxlen=" << maxlen << endl;
+    cout << "minu=" << minu << " upbound=" << upbound << endl;
     cout << "The number of frequent patterns:" << frenum << endl;
     cout << "The time-consuming:" << endtime - begintime << "ms. " << endl;
     cout << "The number of calculation:" << cannum << " " << endl;
-    cout << "The number of simple patts:" << simplepatt.size() << " " << endl;
+    cout << "The number of concise patts:" << concisepatt.size() << " " << endl;
     cout << "Max len of frequent patts:" << f_level << " " << endl;
     cout << "The peak memory usage:" << (double) peak_memu / 1024.0 / 1024.0 / 8.0 << "Mb." << endl;
     cout << "The curr memory usage:" << (double) curr_memu / 1024.0 / 1024.0 / 8.0 << "Mb." << endl;
@@ -1103,7 +1028,7 @@ int main(int argc, const char *argv[]) {
 
     resultfile << tmp << "\t"
                << "simpoint weight:" << argv[1] << "\tcritical path trace:" << argv[2] << "\tpc_mem_trace:" << argv[3]
-               << "\tminsup:" << minsup << "\tminpecusup:" << minpecusup << "\t[minlen,maxlen]:"
+               << "\tminpau:" << minpau << "\tminpecusup:" << minpecusup << "\t[minlen,maxlen]:"
                << "[" << minlen << "," << maxlen << "]\n"
                << "time-consuming:" << endtime - begintime << "ms\t#freq pattern:" << frenum
                << "\t#candidate:" << cannum << "\tpeak memory usage:" << peak_memu << "B\t\tcurrent memory usage:"
