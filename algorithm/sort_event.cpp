@@ -1,3 +1,42 @@
+/****************************************************************************************
+ * The sort_event.cpp program is designed to analyze a log file containing entries related 
+ * to events and instructions. It calculates and displays the sum of weights associated 
+ * with each unique event_name in the log, presenting a sorted list based on the accumulated 
+ * weights. This can provide insights into the significance of different events within the log.
+ * ======================================================================================
+ * Functionality:
+ * --------------------------------------------------------------------------------------
+ * 1. Log Entry Struct:
+ * Defines a LogEntry struct to represent individual entries in the log file. Entries can be 
+ * of two types: "instruction" or "event."
+ * 2. Parsing Log Lines:
+ * Implements a parseLogLine function to parse each line from the log file into a LogEntry struct.
+ * Recognizes and differentiates between lines starting with "*" as instructions and regular 
+ * log entries.
+ * 3. Weight Accumulation:
+ * Reads the log file, accumulates weights associated with each unique event_name, and stores 
+ * the results in a std::map (`eventNameWeightMap`).
+ * 4. Sorting Events:
+ * Creates a sorted vector of pairs (event_name, sum_of_weight) based on the accumulated weights.
+ * Sorts the vector in descending order of weight.
+ * 5. Displaying Results:
+ * Outputs a sorted list of events along with their accumulated weights and percentages relative 
+ * to the total sum of weights.
+ * 6. Command-Line Usage:
+ * The program expects two command-line arguments: the path to the log file (logFilePath) and the 
+ * total sum of weights (sumweight).
+ * Example Usage:
+ * ./sort_event log_file.txt 1000
+ * Output:
+ * Sorted list of events by sum of weight:
+ * Event Name: Event1, Sum of Weight: 500, (50.00%)
+ * Event Name: Event2, Sum of Weight: 300, (30.00%)
+ * Event Name: Event3, Sum of Weight: 200, (20.00%)
+ * =======================================================================================
+ * Conclusion:
+ * This program assists in understanding the relative importance of different events in the log 
+ * by analyzing their cumulative weights.
+ */
 #include <iostream>
 #include <fstream>
 #include <sstream>
