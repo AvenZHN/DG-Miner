@@ -53,6 +53,11 @@ minpecusup:<minimum peculiar utility threshold>
 
 concise patts:
 <concise pattern>
+-------------------- top pc region -----------------------------
+<when define PRINT>
+<region number>:<occurrence>
+[<freqatt number>]:<occurrence>,
+	pc:code
 
 ---------------------------------------------------------------
 <summary information>
